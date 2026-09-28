@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "buildCommand": "cd kifayat-frontend && npm run vercel-build",
+  "outputDirectory": "kifayat-frontend/dist",
+  "installCommand": "cd kifayat-frontend && npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/socket.io/:path*"
+    },
+    {
+      "source": "/socket.io/",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/socket.io/"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/uploads/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html",
+      "statusCode": 200
+    }
+  ]
+}

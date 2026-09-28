@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(ls)",
+      "Exec(node)",
+      "Exec(del)",
+      "Exec(npm start)",
+      "Exec(npm run)",
+      "Exec(git status)",
+      "Exec(git remote)",
+      "Exec(git log)",
+      "Exec(git push)",
+      "Exec(git add)",
+      "Exec(git commit)",
+      "Exec(gh)",
+      "Exec(npm install)",
+      "Exec(mkdir)",
+      "Exec(npm audit)",
+      "Exec(npx tsc)"
+    ]
+  }
+}

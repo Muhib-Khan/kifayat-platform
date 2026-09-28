@@ -1,0 +1,73 @@
+{
+  "version": 2,
+  "images": {
+    "sizes": [80, 600, 900, 1200, 1280, 1500, 2048],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "hhcnewapp.blr1.cdn.digitaloceanspaces.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "p01--kifayat-backend--62p9lfb7xpvc.code.run"
+      }
+    ],
+    "formats": ["image/webp"],
+    "qualities": [50, 75],
+    "minimumCacheTTL": 86400
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://hhcnewapp.blr1.cdn.digitaloceanspaces.com; media-src 'self' blob: https://hhcnewapp.blr1.cdn.digitaloceanspaces.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.googleapis.com https://kifayat--auth-data.firebaseapp.com; frame-src https://kifayat--auth-data.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "kifayat-jet.vercel.app" }],
+      "destination": "https://kifayat.co/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/socket.io/:path*"
+    },
+    {
+      "source": "/socket.io/",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/socket.io/"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://p01--kifayat-backend--62p9lfb7xpvc.code.run/uploads/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html",
+      "statusCode": 200
+    }
+  ]
+}

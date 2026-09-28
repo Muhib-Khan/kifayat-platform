@@ -1,0 +1,40 @@
+# Trash only — everything else is committed
+node_modules/
+dist/
+*.log
+uploads/
+.local/
+.DS_Store
+
+# Secrets — never commit real environment files
+# .env
+# .env.local
+# .env.production
+# .env.*.local
+**/firebase-service-account*.json
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.idea/
+.swarm/
+opencode.json
+.vercel
+.env*
+.claude/
+
+# Debug/test artifacts
+admin-dashboard*.png
+admin-panel-screenshot.png
+stats-response.json
+kifayat-backend/check-admin.cjs
+kifayat-backend/reset-admin-pwd.cjs
+kifayat-backend/test-login.cjs
+kifayat-backend/scripts/add100EveryProduct.js
+kifayat-frontend/test-admin.cjs
+kifayat-frontend/test-admin-login.cjs
+
+.vercel
+.env*
+.claude/

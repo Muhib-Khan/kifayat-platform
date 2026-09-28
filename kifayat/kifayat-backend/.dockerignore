@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+backend.log
+server.log
+.env
+.env.example
+firebase-service-account.json
+uploads
+scripts
+.dockerignore
+Dockerfile
+.Procfile
+.gitignore
+.vscode
+*.md
+*.test.js
+*.spec.js

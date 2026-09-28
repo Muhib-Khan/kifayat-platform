@@ -1,0 +1,17 @@
+{
+  "name": "Kifayat",
+  "short_name": "Kifayat",
+  "description": "Pakistan's trusted online store. Shop electronics, fashion, home goods and more with free delivery over Rs 2,500.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon", "purpose": "any" },
+    { "src": "/favicon-32x32.png", "sizes": "32x32", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon-16x16.png", "sizes": "16x16", "type": "image/png", "purpose": "any" },
+    { "src": "/logo.webp", "sizes": "any", "type": "image/webp", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ],
+  "categories": ["shopping"]
+}

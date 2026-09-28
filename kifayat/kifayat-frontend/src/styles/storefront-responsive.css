@@ -1,0 +1,33 @@
+/* Scoped to the public shell. No global theme or admin overrides. */
+.storefront-shell { min-width: 0; }
+.storefront-shell :is(h1, h2, h3) { overflow-wrap: anywhere; }
+.storefront-shell :is(button, a, input, select, textarea):focus-visible,
+.storefront-drawer :is(button, a):focus-visible {
+  outline: 2px solid var(--brass-deep);
+  outline-offset: 4px;
+}
+.storefront-drawer { overscroll-behavior: contain; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.storefront-drawer nav a { min-width: 0; }
+.storefront-drawer nav a > span { overflow-wrap: anywhere; }
+.storefront-drawer nav a > svg { flex-shrink: 0; }
+.store-mobile-nav {
+  height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.store-product-caption > div:first-child { width: 100%; }
+.store-product-caption a { overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .storefront-main { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
+  .store-whatsapp { bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
+  /* Prevent iOS focus zoom without disabling user zoom. */
+  .storefront-shell :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storefront-shell *, .storefront-drawer, .storefront-drawer-scrim {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

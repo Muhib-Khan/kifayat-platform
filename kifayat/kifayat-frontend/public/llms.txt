@@ -1,0 +1,25 @@
+# Kifayat
+
+> Kifayat is Pakistan's online shopping destination for fashion, electronics, home & kitchen, beauty, sports, and toys — with nationwide delivery and cash on delivery.
+
+## Categories
+
+- [Electronics](https://www.kifayat.co/category/electronics): Phones, earbuds, watches, chargers, and tech accessories.
+- [Fashion](https://www.kifayat.co/category/fashion): Men's and women's fashion, shoes, and accessories.
+- [Home & Kitchen](https://www.kifayat.co/category/home-kitchen): Home appliances, cookware, and kitchen essentials.
+- [Beauty](https://www.kifayat.co/category/beauty): Skincare, personal care, and beauty products.
+- [Sports](https://www.kifayat.co/category/sports): Sports equipment and fitness gear.
+- [Toys](https://www.kifayat.co/category/toys): Toys and games for all ages.
+
+## Key Pages
+
+- [Home](https://www.kifayat.co/): Kifayat online store homepage.
+- [All Products](https://www.kifayat.co/products): Browse the full product catalog.
+- [About](https://www.kifayat.co/about): About Kifayat.
+- [Blog](https://www.kifayat.co/blog): Shopping guides and product advice.
+- [FAQ](https://www.kifayat.co/faq): Frequently asked questions.
+- [Contact](https://www.kifayat.co/contact): Get in touch with Kifayat.
+- [Shipping Policy](https://www.kifayat.co/shipping-policy): Delivery and shipping information.
+- [Return Policy](https://www.kifayat.co/return-policy): Returns and refunds.
+- [Terms](https://www.kifayat.co/terms): Terms of service.
+- [Privacy](https://www.kifayat.co/privacy): Privacy policy.
