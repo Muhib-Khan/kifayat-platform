@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit3, ImagePlus, Package, Plus, Store, Trash2, X } from "lucide-react";
+import { Edit3, ImagePlus, Package, Plus, RefreshCw, Store, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -43,7 +43,7 @@ function SellerDashboard() {
     queryKey: ["seller", "products"],
     queryFn: sellerListProducts,
   });
-  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+  const { data: analyticsData, isLoading: analyticsLoading, isError: analyticsError, refetch: refetchAnalytics } = useQuery({
     queryKey: ["seller", "analytics"],
     queryFn: getSellerAnalytics,
     staleTime: 60_000,
@@ -134,6 +134,14 @@ function SellerDashboard() {
         {analyticsLoading ? (
           <div className="mb-10 grid grid-cols-2 lg:grid-cols-4 gap-3" aria-label="Loading seller analytics">
             {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-32 bg-paper border border-coal/10 animate-pulse" />)}
+          </div>
+        ) : analyticsError ? (
+          <div className="mb-10 border border-red-500/20 bg-red-50/60 p-8 text-center">
+            <p className="font-display italic text-2xl text-red-900">Seller intelligence could not load.</p>
+            <p className="mt-2 text-sm text-red-900/65">Your products remain available below. Retry to reload the account analysis.</p>
+            <button type="button" onClick={() => refetchAnalytics()} className="mt-5 inline-flex items-center gap-2 bg-coal px-4 py-2.5 text-sm font-semibold text-bone hover:bg-coal/90">
+              <RefreshCw className="size-4" /> Retry analysis
+            </button>
           </div>
         ) : analyticsData?.analytics ? <SellerAnalytics analytics={analyticsData.analytics} seller={analyticsData.seller} /> : null}
         {formOpen && (
