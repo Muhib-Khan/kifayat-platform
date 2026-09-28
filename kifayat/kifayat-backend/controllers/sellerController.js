@@ -62,7 +62,7 @@ function validateProductBody(body, { creating = false } = {}) {
       if (!Number.isFinite(value) || value < 0) return `${key} must be a number greater than or equal to 0.`;
     }
   }
-  for (const key of ["description", "category", "imageUrl", "videoUrl"]) {
+  for (const key of ["description", "category", "imageUrl", "videoUrl", "sku"]) {
     if (body?.[key] !== undefined && typeof body[key] !== "string") return `${key} must be a string.`;
   }
   return null;
@@ -70,7 +70,7 @@ function validateProductBody(body, { creating = false } = {}) {
 
 function normalizeProductInput(body, existing = {}) {
   const input = {};
-  for (const key of ["name", "description", "category", "imageUrl", "videoUrl"]) {
+  for (const key of ["name", "description", "category", "imageUrl", "videoUrl", "sku"]) {
     if (body[key] !== undefined) input[key] = String(body[key]).trim();
   }
   for (const key of ["retailPrice", "stock", "weight"]) {

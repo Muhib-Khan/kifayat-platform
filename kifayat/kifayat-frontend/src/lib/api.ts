@@ -4,13 +4,14 @@
  * Cookies (httpOnly JWT) are included automatically via credentials: 'include'.
  */
 
-const BASE = "/api";
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/api` : "/api";
+export { API_BASE as BASE };
 
 async function request<T = any>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const res = await fetch(BASE + path, {
+  const res = await fetch(API_BASE + path, {
     ...options,
     credentials: "include",
     headers: {

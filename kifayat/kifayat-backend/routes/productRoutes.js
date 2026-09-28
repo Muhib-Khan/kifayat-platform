@@ -5,6 +5,7 @@ const fs = require("fs");
 const { sniffUpload } = require("../utils/fileSniffer");
 const {
   uploadCSV,
+  uploadProductFiles,
   getProducts,
   getSuggestions,
   getTrendingSearches,
@@ -64,6 +65,26 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 },
 });
 
+// ── Product image/video uploads (admin only) ──────────────────────────────
+// Files are stored on disk (not memory) because images/videos can be large.
+// Each file's on-disk extension is derived from its real magic bytes via fileSniffer,
+// never from the client-supplied filename — preventing stored-XSS via polyglots.
+const productsUploadDir = path.join(__dirname, "..", "uploads", "products");
+if (!fs.existsSync(productsUploadDir)) {
+  fs.mkdirSync(productsUploadDir, { recursive: true });
+}
+
+const productFileUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, productsUploadDir),
+    filename: (_req, _file, cb) => {
+      cb(null, `prod-${Date.now()}-${Math.round(Math.random() * 1e9)}`);
+    },
+  }),
+  fileFilter: (_req, _file, cb) => cb(null, true), // byte-level validation happens in the handler
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB per file
+});
+
 // CSV upload — validate content from magic bytes, reject binaries/polyglots
 router.post(
   "/upload-csv",
@@ -87,7 +108,21 @@ router.post(
     }
   },
   upload.single("csv"),
-  uploadCSV
+   uploadCSV
+);
+
+// Product image/video uploads — accepts multiple images and one video from
+// the admin product edit form's "Upload from Gallery" buttons.
+router.post(
+  "/upload-files",
+  protect,
+  requireAdmin,
+  requireSameOrigin,
+  productFileUpload.fields([
+    { name: "images", maxCount: 20 },
+    { name: "video", maxCount: 1 },
+  ]),
+  uploadProductFiles
 );
 
 // ── Product CRUD (admin) ──

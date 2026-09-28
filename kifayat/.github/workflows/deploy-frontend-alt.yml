@@ -1,0 +1,94 @@
+name: Alternative Frontend Deployment
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-alt-frontend
+  cancel-in-progress: true
+
+jobs:
+  alternative-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      PRERENDER_PRODUCT_LIMIT: "2000"
+      PRERENDER_PRODUCT_DEADLINE_MS: "2400000"
+      PRERENDER_PRODUCT_CONCURRENCY: "15"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: kifayat-frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: kifayat-frontend
+        run: npm ci
+
+      - name: Install Chromium with system dependencies
+        working-directory: kifayat-frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Build (sitemaps + vite + prerender)
+        working-directory: kifayat-frontend
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
+
+      - name: Verify prerender succeeded
+        working-directory: kifayat-frontend
+        run: |
+          count=$(grep -o "<article" dist/index.html | wc -l)
+          echo "Prerendered product cards on homepage: $count"
+          if [ "$count" -lt 60 ]; then
+            echo "::error::Prerender failed: expected >=60 <article> cards in dist/index.html, got $count"
+            exit 1
+          fi
+
+      - name: Setup Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Assemble prebuilt output
+        run: |
+          rm -rf .vercel/output
+          mkdir -p .vercel/output/static
+          cp -r kifayat-frontend/dist/. .vercel/output/static/
+          npm install --no-save @vercel/routing-utils@latest
+          node -e "
+            const fs = require('fs');
+            const { getTransformedRoutes } = require('@vercel/routing-utils');
+            const cfg = require('./kifayat-frontend/vercel.json');
+            const rewrites = (cfg.rewrites || []).map(({ statusCode, ...rest }) => rest);
+            const { routes, error } = getTransformedRoutes({
+              cleanUrls: cfg.cleanUrls,
+              headers: cfg.headers,
+              redirects: cfg.redirects,
+              rewrites,
+              trailingSlash: cfg.trailingSlash,
+            });
+            if (error) { console.error(error); process.exit(1); }
+            const out = { version: 3, routes };
+            if (cfg.images) out.images = cfg.images;
+            fs.writeFileSync('.vercel/output/config.json', JSON.stringify(out, null, 2));
+            console.log('Generated .vercel/output/config.json');
+          "
+
+      - name: Deploy prebuilt output to Vercel
+        run: |
+          vercel deploy --prebuilt --prod \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=muhibkhandev-5516s-projects \
+            --yes \
+            --force

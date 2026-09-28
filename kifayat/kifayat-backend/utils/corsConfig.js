@@ -10,6 +10,10 @@ const getAllowedOrigins = () => {
     "http://localhost:5000",
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:10192",
     // Canonical storefront host + Vercel deployment (always allowed).
     "https://www.kifayat.co",
     "https://kifayat-jet.vercel.app",

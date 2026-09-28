@@ -291,15 +291,6 @@ function CategoryStrip() {
           ))}
           <div className="w-px h-4 bg-coal/10 mx-1 shrink-0" />
           <Link
-            to="/seller/$slug"
-            params={{ slug: "faizs-store" }}
-            preload="render"
-             className="group flex items-center gap-1.5 px-3 py-4 min-h-14 text-xs sm:text-sm font-medium tracking-normal text-coal/80 hover:text-coal hover:bg-paper whitespace-nowrap transition-colors shrink-0 border-b-2 border-transparent hover:border-brass"
-          >
-            <Store className="size-3.5 group-hover:text-brass transition-colors" strokeWidth={1.5} />
-             Faiza&apos;s Store
-          </Link>
-          <Link
             to="/products"
             preload="render"
              className="flex items-center gap-1.5 px-3 py-4 min-h-14 text-xs sm:text-sm font-semibold tracking-normal text-brass whitespace-nowrap transition-colors shrink-0 hover:opacity-75"

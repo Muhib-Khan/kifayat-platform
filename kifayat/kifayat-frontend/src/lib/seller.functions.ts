@@ -1,4 +1,4 @@
-import { api, normalizeProduct } from "./api";
+import { api, normalizeProduct, BASE } from "./api";
 
 export type SellerProductInput = {
   name: string;
@@ -9,6 +9,7 @@ export type SellerProductInput = {
   weight?: number;
   imageUrl?: string;
   videoUrl?: string;
+  sku?: string;
 };
 
 export type SellerAnalytics = {
@@ -199,6 +200,17 @@ export async function sellerUpdateProduct(id: string, input: Partial<SellerProdu
 
 export async function sellerDeleteProduct(id: string): Promise<void> {
   await api.del(`/seller/products/${id}`);
+}
+
+export async function sellerUploadProductFiles(formData: FormData): Promise<any> {
+  const response = await fetch(BASE + "/seller/upload-files", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error((data as any).message || "Upload failed");
+  return data;
 }
 
 export async function getSellerStore(slug = "faizs-store"): Promise<{ seller: any; products: any[] }> {

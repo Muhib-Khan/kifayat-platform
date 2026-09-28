@@ -1,7 +1,7 @@
 /**
  * Admin functions backed by the Kifayat Express API.
  */
-import { api, normalizeProduct } from "./api";
+import { api, normalizeProduct, BASE } from "./api";
 
 // ─── Dashboard ─────────────────────────────────────────────────────────────
 
@@ -500,7 +500,18 @@ export async function adminClearProducts(): Promise<any> {
 }
 
 export async function adminUploadProductCSV(formData: FormData): Promise<any> {
-  const response = await fetch("/api/products/upload-csv", {
+  const response = await fetch(BASE + "/products/upload-csv", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error((data as any).message || "Upload failed");
+  return data;
+}
+
+export async function adminUploadProductFiles(formData: FormData): Promise<any> {
+  const response = await fetch(BASE + "/products/upload-files", {
     method: "POST",
     credentials: "include",
     body: formData,

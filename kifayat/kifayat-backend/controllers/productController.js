@@ -2,6 +2,9 @@ const { Readable } = require("stream");
 const csv = require("csv-parser");
 const mongoose = require("mongoose");
 const Groq = require("groq-sdk");
+const path = require("path");
+const fs = require("fs");
+const { sniffUpload } = require("../utils/fileSniffer");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const Settings = require("../models/Settings");
@@ -551,6 +554,68 @@ const uploadCSV = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Server error while processing CSV." });
+  }
+};
+
+const uploadProductFiles = async (req, res) => {
+  try {
+    if (!req.files || (Object.keys(req.files).length === 0)) {
+      return res.status(400).json({ success: false, message: "No files uploaded." });
+    }
+
+    const IMAGE_BASE = "/uploads/products";
+
+    const uploadedImages = [];
+    const uploadedVideos = [];
+
+    const processFile = (file) => {
+      const sniffed = sniffUpload({ path: file.path, buffer: file.buffer }, "image-or-video");
+      if (!sniffed || !sniffed.type) {
+        return null;
+      }
+      const ext = sniffed.ext;
+      const finalName = `${file.filename}.${ext}`;
+      const finalPath = path.join(path.dirname(file.path), finalName);
+
+      if (file.path !== finalPath) {
+        fs.renameSync(file.path, finalPath);
+      }
+
+      const url = `${IMAGE_BASE}/${finalName}`;
+      return { url, type: sniffed.type.startsWith("video/") ? "video" : "image" };
+    };
+
+    // Images can be multiple; video is single
+    if (req.files.images) {
+      for (const f of req.files.images) {
+        const result = processFile(f);
+        if (!result) {
+          return res.status(400).json({ success: false, message: `Invalid image file: ${f.originalname}` });
+        }
+        if (result.type === "image") uploadedImages.push(result.url);
+        else return res.status(400).json({ success: false, message: `File is not a valid image: ${f.originalname}` });
+      }
+    }
+
+    if (req.files.video) {
+      for (const f of req.files.video) {
+        const result = processFile(f);
+        if (!result) {
+          return res.status(400).json({ success: false, message: `Invalid video file: ${f.originalname}` });
+        }
+        if (result.type === "video") uploadedVideos.push(result.url);
+        else return res.status(400).json({ success: false, message: `File is not a valid video: ${f.originalname}` });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      images: uploadedImages,
+      video: uploadedVideos.length > 0 ? uploadedVideos[0] : null,
+    });
+  } catch (err) {
+    console.error("uploadProductFiles error:", err);
+    return res.status(500).json({ success: false, message: "File upload failed." });
   }
 };
 
@@ -1440,8 +1505,8 @@ const updateProduct = async (req, res) => {
   invalidateProductListCache();
   try {
     const allowed = [
-      "name", "description", "wholesalePrice", "retailPrice", "stock",
-      "imageUrl", "videoUrl", "weight", "sku", "productId",
+      "name", "description", "wholesalePrice", "retailPrice", "stock", "category",
+      "imageUrl", "videoUrl", "gallery", "weight", "sku", "productId",
       "hidden", "keywords", "seoTitle", "seoDescription",
     ];
     const updates = {};
@@ -2680,6 +2745,7 @@ const clearAllManualPositions = async (req, res) => {
 
 module.exports = {
   uploadCSV,
+  uploadProductFiles,
   createManualProduct,
   getProducts,
   getSuggestions,

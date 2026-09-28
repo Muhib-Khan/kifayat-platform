@@ -4,6 +4,7 @@ import {
   adminListProductsPaginated,
   adminDeleteProduct,
   adminUploadProductCSV,
+  adminUploadProductFiles,
   adminClearProducts,
   adminGetCategoryPricing,
   adminUpdatePricingAll,
@@ -19,7 +20,7 @@ import {
   adminUpdateBulkManualPositions,
   adminClearAllManualPositions,
 } from "@/lib/admin.functions";
-import { Trash, ExternalLink, Upload, Eye, EyeOff, Edit2, Package, Inbox, Loader2, X, Download, Save, Box, Percent, TrendingUp, ChevronDown, CheckCircle, RefreshCw, Search, ChevronLeft, ChevronRight, Target, Database, ArrowUpDown } from "lucide-react";
+import { Trash, ExternalLink, Upload, Eye, EyeOff, Edit2, Package, Inbox, Loader2, X, Download, Save, Box, Percent, TrendingUp, ChevronDown, CheckCircle, RefreshCw, Search, ChevronLeft, ChevronRight, Target, Database, ArrowUpDown, Image as ImageIcon, Video, Play } from "lucide-react";
 import { toast } from "sonner";
 import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,6 +58,10 @@ function ProductEditModal({
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const imageFileRef = useRef<HTMLInputElement>(null);
+  const videoFileRef = useRef<HTMLInputElement>(null);
 
   const productId = product._id ?? product.id;
   const wholesale = Number(form.wholesalePrice) || 0;
@@ -118,13 +123,67 @@ function ProductEditModal({
     }
   };
 
+  const parseImageUrls = (val: string): string[] =>
+    val
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+  const removeImageUrl = (urlToRemove: string) => {
+    const urls = parseImageUrls(form.imageUrl).filter((u) => u !== urlToRemove);
+    setForm((p) => ({ ...p, imageUrl: urls.join(", ") }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingImages(true);
+    try {
+      const fd = new FormData();
+      for (const f of files) fd.append("images", f);
+      const res = await adminUploadProductFiles(fd);
+      const newUrls = res.images ?? [];
+      const existing = parseImageUrls(form.imageUrl);
+      const combined = [...existing, ...newUrls].filter((u, i, arr) => arr.indexOf(u) === i);
+      setForm((p) => ({ ...p, imageUrl: combined.join(", ") }));
+      if (newUrls.length === 0) toast.warning("No valid images were uploaded.");
+      else toast.success(`Uploaded ${newUrls.length} image(s).`);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Image upload failed.");
+    } finally {
+      setUploadingImages(false);
+      if (imageFileRef.current) imageFileRef.current.value = "";
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    try {
+      const fd = new FormData();
+      fd.append("video", file);
+      const res = await adminUploadProductFiles(fd);
+      const videoUrl = res.video ?? null;
+      if (videoUrl) {
+        setForm((p) => ({ ...p, videoUrl: videoUrl }));
+        toast.success("Video uploaded successfully.");
+      } else {
+        toast.warning("No valid video was uploaded.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message ?? "Video upload failed.");
+    } finally {
+      setUploadingVideo(false);
+      if (videoFileRef.current) videoFileRef.current.value = "";
+    }
+  };
+
   const textFields: { label: string; key: keyof typeof form; type: string }[] = [
     { label: "Name", key: "name", type: "text" },
     { label: "Description", key: "description", type: "textarea" },
     { label: "Stock", key: "stock", type: "number" },
     { label: "Weight (kg)", key: "weight", type: "number" },
-    { label: "Image URL", key: "imageUrl", type: "text" },
-    { label: "Video URL", key: "videoUrl", type: "text" },
     { label: "Manual Position", key: "manualPosition", type: "number" },
     { label: "SEO Keywords (comma-separated)", key: "keywords", type: "text" },
     { label: "SEO Title (optional)", key: "seoTitle", type: "text" },
@@ -181,6 +240,128 @@ function ProductEditModal({
               )}
             </div>
           ))}
+
+          {/* ── Image URLs + gallery upload ───────────────────────────────── */}
+          <div>
+            <label className="block text-muted-foreground text-[11px] uppercase tracking-widest font-bold mb-2">
+              Image URLs
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={form.imageUrl}
+                onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
+                placeholder="Comma-separated image URLs"
+                className="flex-1 px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:border-brass focus:ring-1 focus:ring-brass transition-shadow shadow-sm"
+              />
+              <input
+                ref={imageFileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => imageFileRef.current?.click()}
+                disabled={uploadingImages}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold border border-border bg-card hover:bg-secondary rounded-xl text-foreground hover:text-brass disabled:opacity-50 transition-all shadow-sm"
+              >
+                {uploadingImages ? <Loader2 className="size-4 animate-spin" /> : <ImageIcon className="size-4 text-brass" />}
+                Upload
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-2 mb-3">
+              Paste image URLs (comma-separated) or upload JPG, PNG, WebP, GIF files from your device.
+            </p>
+            {parseImageUrls(form.imageUrl).length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {parseImageUrls(form.imageUrl).map((url, i) => (
+                  <div key={i} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Image ${i + 1}`}
+                      className="size-16 object-cover bg-secondary border border-border rounded-lg shadow-sm"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3C/svg%3E";
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImageUrl(url)}
+                      className="absolute -top-1 -right-1 size-5 flex items-center justify-center bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                      title="Remove image"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Video URL + gallery upload ─────────────────────────────────- */}
+          <div>
+            <label className="block text-muted-foreground text-[11px] uppercase tracking-widest font-bold mb-2">
+              Video URL
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={form.videoUrl}
+                onChange={(e) => setForm((p) => ({ ...p, videoUrl: e.target.value }))}
+                placeholder="Enter a video URL or upload from your device"
+                className="flex-1 px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:border-brass focus:ring-1 focus:ring-brass transition-shadow shadow-sm"
+              />
+              <input
+                ref={videoFileRef}
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => videoFileRef.current?.click()}
+                disabled={uploadingVideo}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold border border-border bg-card hover:bg-secondary rounded-xl text-foreground hover:text-brass disabled:opacity-50 transition-all shadow-sm"
+              >
+                {uploadingVideo ? <Loader2 className="size-4 animate-spin" /> : <Video className="size-4 text-brass" />}
+                Upload
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-2">
+              Paste a video URL or upload MP4, MOV, WebM from your device (max 50 MB).
+            </p>
+            {form.videoUrl && (
+              <div className="mt-3">
+                {form.videoUrl.match(/\.(mp4|webm|mov)(\?|$)/i) ? (
+                  <video
+                    src={form.videoUrl}
+                    controls
+                    className="max-w-full max-h-48 rounded-lg border border-border shadow-sm"
+                  />
+                ) : (
+                  <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg border border-border">
+                    <Play className="size-5 text-brass" />
+                    <span className="text-sm text-foreground font-medium truncate flex-1">
+                      {form.videoUrl}
+                    </span>
+                    <a
+                      href={form.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-brass hover:text-brass/80"
+                    >
+                      <ExternalLink className="size-4" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <p className="text-xs text-muted-foreground/80 leading-relaxed -mt-1">
             SEO Keywords make this product appear in site search. Type phrases customers use — e.g.{" "}

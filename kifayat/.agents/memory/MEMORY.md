@@ -1,0 +1,6 @@
+- [Kifayat project setup](kifayat-setup.md) — monorepo with kifayat-backend (port 5000) and kifayat-frontend (port 5173); Firebase service account missing; Resend API key invalid.
+- [Kifayat backend audit](kifayat-backend-audit.md) — four gaps fixed vs the original spec; key: getShipmentEmails response format, phone field, Review.order field.
+- [Kifayat SEO system](kifayat-seo.md) — react-helmet-async + JSON-LD on all routes; split sitemap index; UIProduct null-coercion rules.
+- [Kifayat CSV lifecycle](kifayat-csv-lifecycle.md) — customer confirmation and admin finalization must share one idempotent PreOrder/MainOrderCSVData path.
+- [Kifayat full architecture](kifayat-full-architecture.md) — complete verified reference: ports (backend 3001, frontend 5000), all 31 models, 17 controllers, 18 route mounts, socket events, order lifecycle, auth flow, frontend stores/route tree, env keys, gotchas. Read this before any new feature work.
+- [Kifayat dynamic data](kifayat-dynamic-data-sync.md) — DynamicData collection (dynamicdata), per-product fetch via POST /hhc-proxy/product-dynamic-data/:id, "Get Product Dynamic Data" button + badge on admin Products page; global sync removed.
