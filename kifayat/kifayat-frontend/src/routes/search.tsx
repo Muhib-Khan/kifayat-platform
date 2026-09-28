@@ -87,11 +87,11 @@ function SearchPage() {
       )}
 
       <section className="bg-coal text-bone">
-        <div className="max-w-[1600px] mx-auto px-5 lg:px-10 pt-10 lg:pt-16 pb-10 lg:pb-14">
-          <p className="eyebrow text-bone/60 mb-6 flex items-center gap-3">
+        <div className="max-w-[1600px] mx-auto px-5 lg:px-10 pt-6 lg:pt-8 pb-6 lg:pb-8">
+          <p className="eyebrow text-bone/70 mb-3 flex items-center gap-3 text-xs sm:text-sm">
             <span className="h-px w-8 bg-bone/40" /> The Index · Search
           </p>
-          <h1 className="font-display italic text-5xl sm:text-6xl lg:text-8xl leading-[0.88] mb-8">
+          <h1 className="font-display italic text-3xl sm:text-4xl lg:text-5xl leading-none mb-4">
             {search.q ? (
               <>
                 "<span className="text-brass">{search.q}</span>"
@@ -111,11 +111,11 @@ function SearchPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products, brands, categories…"
-              className="w-full h-14 pl-14 pr-32 bg-bone/5 border border-bone/20 outline-none focus:border-brass text-bone placeholder:text-bone/40 text-base transition"
+              className="w-full h-12 pl-12 pr-32 bg-bone/5 border border-bone/20 outline-none focus:border-brass text-bone placeholder:text-bone/40 text-base transition"
             />
             <button
               type="submit"
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-brass text-coal eyebrow px-4 py-2 text-xs hover:bg-brass/90 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-brass text-coal px-4 py-2 text-sm font-semibold tracking-wide hover:bg-brass/90 transition"
             >
               Search
             </button>

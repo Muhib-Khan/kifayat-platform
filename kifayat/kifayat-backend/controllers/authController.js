@@ -31,7 +31,8 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
-const SELLER_EMAIL = "faiz@kifayat.co";
+const SELLER_EMAIL = (process.env.SELLER_EMAIL || "faiza@kifayat.co").trim().toLowerCase();
+const SELLER_STORE_NAME = "Faiza's Store";
 const getRoleForEmail = (email) => {
   const normalized = email.toLowerCase();
   if (ADMIN_EMAILS.includes(normalized)) return "admin";
@@ -101,7 +102,7 @@ const issueSession = async (req, res, user, authProvider) => {
   if (user.role !== roleForEmail && (roleForEmail === "admin" || roleForEmail === "seller")) {
     user.role = roleForEmail;
     if (roleForEmail === "seller") {
-      user.storeName = "Faiz's Store";
+      user.storeName = SELLER_STORE_NAME;
       user.storeSlug = "faizs-store";
     }
     await user.save();
@@ -660,7 +661,7 @@ const getMe = async (req, res) => {
     if (user.role !== roleForEmail && (roleForEmail === "admin" || roleForEmail === "seller")) {
       user.role = roleForEmail;
       if (roleForEmail === "seller") {
-        user.storeName = "Faiz's Store";
+      user.storeName = SELLER_STORE_NAME;
         user.storeSlug = "faizs-store";
       }
       await user.save();

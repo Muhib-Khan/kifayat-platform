@@ -116,7 +116,7 @@ function SellerDashboard() {
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="eyebrow text-brass text-[10px] mb-3">Seller workspace</p>
-              <h1 className="font-display italic text-4xl sm:text-5xl">{user?.storeName || "Faiz's Store"}</h1>
+              <h1 className="font-display italic text-4xl sm:text-5xl">{user?.storeName || "Faiza's Store"}</h1>
               <p className="mt-3 text-bone/65 text-sm max-w-md">Add and manage the products that appear in your public store and across Kifayat.</p>
             </div>
             <button type="button" onClick={() => { setEditingId(null); setForm(emptyForm); setFormOpen(true); }} className="inline-flex items-center gap-2 bg-brass text-coal px-5 py-3 text-sm font-semibold hover:bg-brass/90 transition-colors">
@@ -166,7 +166,7 @@ function SellerDashboard() {
           <div className="border border-dashed border-coal/20 py-20 text-center">
             <ImagePlus className="size-10 mx-auto text-coal/20" strokeWidth={1.2} />
             <h2 className="mt-4 font-display italic text-2xl">Your shelf is empty</h2>
-            <p className="mt-2 text-sm text-coal/60">Add your first product to show it in Faiz&apos;s Store.</p>
+            <p className="mt-2 text-sm text-coal/60">Add your first product to show it in Faiza&apos;s Store.</p>
             <button type="button" onClick={() => setFormOpen(true)} className="mt-6 text-sm text-brass underline underline-offset-4">Add the first product</button>
           </div>
         ) : (

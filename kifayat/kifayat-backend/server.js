@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const compression = require("compression");
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
@@ -168,38 +169,87 @@ if (process.env.NODE_ENV === "production") {
 // ---------------------------------------------------------------------------
 // Database
 // ---------------------------------------------------------------------------
-connectDB().then(ensureFaizSeller).catch((error) => {
-  console.error("Failed to provision Faiz's Store seller account:", error);
+connectDB().then(ensureBootstrapAccounts).catch((error) => {
+  console.error("Failed to provision bootstrap accounts:", error);
 });
 
-// Provision the dedicated seller account on first boot. The password is stored
-// only as a bcrypt hash; existing accounts are never overwritten.
-async function ensureFaizSeller() {
-  const email = "faiz@kifayat.co";
-  const passwordHash = "$2b$12$H.5qW8pPeTzCAPOhjEalCeZbQWivmX7Q39C5j0HCRZlT1u9DAPXZG";
-  const existing = await User.findOne({ email });
+// Bootstrap passwords are supplied through Replit Secrets and are never stored
+// in source code. Existing accounts are preserved unless they are being moved
+// from the legacy seller email to the new Faiza identity.
+async function ensureBootstrapAccounts() {
+  await ensureFaizaSeller();
+  await ensureBootstrapAdmin();
+}
+
+async function ensureFaizaSeller() {
+  const email = (process.env.SELLER_EMAIL || "faiza@kifayat.co").trim().toLowerCase();
+  const legacyEmail = "faiz@kifayat.co";
+  const storeName = "Faiza's Store";
+  const bootstrapPassword = process.env.SELLER_BOOTSTRAP_PASSWORD;
+  const existing = await User.findOne({ $or: [{ email }, { email: legacyEmail }] });
   if (!existing) {
+    if (!bootstrapPassword) {
+      console.warn("⚠️  SELLER_BOOTSTRAP_PASSWORD is not set — Faiza's Store was not provisioned.");
+      return;
+    }
     await User.create({
-      name: "Faiz",
+      name: "Faiza",
       email,
-      password: passwordHash,
+      password: await bcrypt.hash(bootstrapPassword, 12),
       gender: "Prefer not to say",
       authProvider: "email",
       isVerified: true,
       role: "seller",
-      storeName: "Faiz's Store",
+      storeName,
       storeSlug: "faizs-store",
     });
-    console.log("✅ Faiz's Store seller account provisioned.");
+    console.log("✅ Faiza's Store seller account provisioned.");
     return;
   }
   const updates = {};
+  const movingFromLegacyEmail = existing.email === legacyEmail && email !== legacyEmail;
+  if (movingFromLegacyEmail) {
+    updates.email = email;
+    updates.name = "Faiza";
+    if (bootstrapPassword) updates.password = await bcrypt.hash(bootstrapPassword, 12);
+  }
   if (existing.role !== "seller") updates.role = "seller";
-  if (existing.storeName !== "Faiz's Store") updates.storeName = "Faiz's Store";
+  if (existing.storeName !== storeName) updates.storeName = storeName;
   if (existing.storeSlug !== "faizs-store") updates.storeSlug = "faizs-store";
   if (Object.keys(updates).length > 0) {
     await User.updateOne({ _id: existing._id }, { $set: updates });
-    console.log("✅ Faiz's Store seller profile synchronized.");
+    console.log("✅ Faiza's Store seller profile synchronized.");
+  }
+}
+
+async function ensureBootstrapAdmin() {
+  const email = (process.env.ADMIN_BOOTSTRAP_EMAIL || "cofounder@kifayat.co").trim().toLowerCase();
+  const bootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+  const existing = await User.findOne({ email });
+  if (!existing) {
+    if (!bootstrapPassword) {
+      console.warn("⚠️  ADMIN_BOOTSTRAP_PASSWORD is not set — cofounder admin was not provisioned.");
+      return;
+    }
+    await User.create({
+      name: "Kifayat Co-founder",
+      email,
+      password: await bcrypt.hash(bootstrapPassword, 12),
+      gender: "Prefer not to say",
+      authProvider: "email",
+      isVerified: true,
+      role: "admin",
+    });
+    console.log("✅ Cofounder admin account provisioned.");
+    return;
+  }
+
+  const updates = {};
+  if (existing.role !== "admin") updates.role = "admin";
+  if (!existing.isVerified) updates.isVerified = true;
+  if (Object.keys(updates).length > 0) {
+    await User.updateOne({ _id: existing._id }, { $set: updates });
+    console.log("✅ Cofounder admin profile synchronized.");
   }
 }
 

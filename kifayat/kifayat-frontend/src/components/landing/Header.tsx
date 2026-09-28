@@ -95,7 +95,7 @@ function HeaderSearch({ className = "relative flex-1 min-w-0 max-w-2xl" }: { cla
             onChange={(e) => { setQ(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
             placeholder={t("search.placeholder")}
-            className="w-full min-w-0 h-11 pl-3 sm:pl-5 pr-9 sm:pr-10 border-2 border-coal/20 bg-paper focus:border-coal outline-none text-xs sm:text-sm transition-colors placeholder:text-coal/70"
+             className="w-full min-w-0 h-12 pl-3 sm:pl-5 pr-9 sm:pr-10 border-2 border-coal/20 bg-paper focus:border-coal outline-none text-sm sm:text-base transition-colors placeholder:text-coal/70"
           />
           {q && (
             <button type="button" aria-label="Clear search" onClick={() => { setQ(""); setOpen(false); }}
@@ -105,7 +105,7 @@ function HeaderSearch({ className = "relative flex-1 min-w-0 max-w-2xl" }: { cla
           )}
         </div>
         <button type="submit" aria-label={t("search.submit")}
-           className="shrink-0 h-11 px-3 sm:px-6 bg-coal text-bone eyebrow text-xs hover:bg-brass hover:text-coal transition-colors duration-300">
+            className="shrink-0 h-12 px-3 sm:px-6 bg-coal text-bone text-sm font-semibold tracking-wide hover:bg-brass hover:text-coal transition-colors duration-300">
            <Search className="size-4 sm:hidden" strokeWidth={1.5} />
            <span className="hidden sm:inline">{t("search.submit")}</span>
         </button>
@@ -275,7 +275,7 @@ function CategoryStrip() {
 
   return (
     <div className="bg-bone border-b border-coal/8">
-       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8">
+         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto no-scrollbar">
           {cats.map(({ slug, label, Icon }) => (
             <Link
@@ -283,7 +283,7 @@ function CategoryStrip() {
               to="/category/$slug"
               params={{ slug }}
               preload="render"
-              className="group flex items-center gap-1.5 px-3 py-3 min-h-11 eyebrow text-[10px] sm:text-xs text-coal/65 hover:text-coal hover:bg-paper whitespace-nowrap transition-colors shrink-0 border-b-2 border-transparent hover:border-brass"
+               className="group flex items-center gap-1.5 px-3 py-4 min-h-14 text-xs sm:text-sm font-medium tracking-normal text-coal/80 hover:text-coal hover:bg-paper whitespace-nowrap transition-colors shrink-0 border-b-2 border-transparent hover:border-brass"
             >
               <Icon className="size-3.5 group-hover:text-brass transition-colors" strokeWidth={1.5} />
               {label}
@@ -294,15 +294,15 @@ function CategoryStrip() {
             to="/seller/$slug"
             params={{ slug: "faizs-store" }}
             preload="render"
-            className="group flex items-center gap-1.5 px-3 py-3 min-h-11 eyebrow text-[10px] sm:text-xs text-coal/65 hover:text-coal hover:bg-paper whitespace-nowrap transition-colors shrink-0 border-b-2 border-transparent hover:border-brass"
+             className="group flex items-center gap-1.5 px-3 py-4 min-h-14 text-xs sm:text-sm font-medium tracking-normal text-coal/80 hover:text-coal hover:bg-paper whitespace-nowrap transition-colors shrink-0 border-b-2 border-transparent hover:border-brass"
           >
             <Store className="size-3.5 group-hover:text-brass transition-colors" strokeWidth={1.5} />
-            Faiz&apos;s Store
+             Faiza&apos;s Store
           </Link>
           <Link
             to="/products"
             preload="render"
-            className="flex items-center gap-1.5 px-3 py-3 min-h-11 eyebrow text-[10px] sm:text-xs text-brass whitespace-nowrap transition-colors shrink-0 font-semibold hover:opacity-75"
+             className="flex items-center gap-1.5 px-3 py-4 min-h-14 text-xs sm:text-sm font-semibold tracking-normal text-brass whitespace-nowrap transition-colors shrink-0 hover:opacity-75"
           >
             <Tag className="size-3.5" strokeWidth={1.5} />
             All Deals
@@ -361,7 +361,7 @@ export function Header() {
     >
       {/* â”€â”€ Top banner â”€â”€ */}
       <div className="bg-coal text-bone">
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-9 flex items-center justify-between eyebrow text-[11px]">
+         <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-10 flex items-center justify-between text-xs sm:text-sm font-medium tracking-normal">
           <span className="hidden sm:inline opacity-75">
             {t("banner.delivery", { fee: deliveryFee })}
           </span>
@@ -386,7 +386,7 @@ export function Header() {
 
       {/* â”€â”€ Main nav â”€â”€ */}
       <div className="bg-bone/95 backdrop-blur-xl border-b border-coal/8 relative z-50">
-         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8 h-16 lg:h-[4.5rem] flex items-center gap-2 sm:gap-3 lg:gap-5">
+         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8 h-[4.5rem] lg:h-20 flex items-center gap-2 sm:gap-3 lg:gap-5">
 
           {/* Drawer toggle */}
           <button
@@ -432,7 +432,7 @@ export function Header() {
       {/* â”€â”€ Category strip â”€â”€ */}
       <CategoryStrip />
       <div className="hidden lg:block bg-paper border-b border-coal/8">
-        <div className="max-w-[1600px] mx-auto px-8 h-9 flex items-center justify-center gap-8 eyebrow text-[10px] text-coal/85">
+         <div className="max-w-[1600px] mx-auto px-8 h-11 flex items-center justify-center gap-8 text-xs font-medium tracking-normal text-coal/85">
           <span className="inline-flex items-center gap-1.5"><Truck className="size-3 text-brass" strokeWidth={1.5} /> {t("trust.delivery")}</span>
           <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3 text-brass" strokeWidth={1.5} /> {t("trust.cod")}</span>
           <span className="inline-flex items-center gap-1.5"><RotateCcw className="size-3 text-brass" strokeWidth={1.5} /> {t("trust.returns")}</span>
